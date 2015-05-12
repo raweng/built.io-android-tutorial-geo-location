@@ -1,9 +1,12 @@
 package com.buitio.builtgeolocation;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import com.raweng.built.Built;
+import com.raweng.built.BuiltApplication;
 import com.raweng.built.BuiltError;
 import com.raweng.built.BuiltUser;
 import com.raweng.built.userInterface.BuiltUILoginController;
@@ -28,7 +31,10 @@ import com.raweng.built.userInterface.BuiltUILoginController;
  */
 public class LoginActivity extends BuiltUILoginController{
 
-	@Override
+    private BuiltApplication builtApplication;
+    private ProgressDialog progressDialog;
+
+    @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		/// BuiltUILoginController can be used by extending user class.
@@ -39,12 +45,25 @@ public class LoginActivity extends BuiltUILoginController{
 		 * Checking user already logged in.
 		 * Checking user data is on disc.
 		 */
-		if(BuiltUser.getSession() != null){
+
+        try {
+            builtApplication = Built.application(LoginActivity.this, "blt9f2f3c1d77c907e0");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if(builtApplication.getCurrentUser() != null){
 			Intent intent = new Intent(LoginActivity.this, LocationListActivity.class);
 			startActivity(intent);
 			finish();
 		}
-		
+
+        initProgressbar();
+        /*
+         * set api key
+         */
+        setApplicationKey("blt9f2f3c1d77c907e0");
+
 		/*
 		 * set twitter application credential for login with twitter.
 		 */
@@ -55,21 +74,23 @@ public class LoginActivity extends BuiltUILoginController{
 		 */
 		Intent signUpintent = new Intent(LoginActivity.this, SignUpActivity.class);
 		setSignUpIntent(signUpintent);
+
+        setProgressDialog(progressDialog);
+
 	}
-	
-	@Override
+
+    private void initProgressbar() {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Loading please wait...");
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.setCancelable(false);
+
+    }
+
+    @Override
 	public void loginSuccess(BuiltUser user) {
 		/// After login successful BuiltUser object provided in success callback.
-		
-		/*
-		 * Saving user data or session on disc.
-		 */
-		try {
-			user.saveSession();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
+
 		Intent intent = new Intent(LoginActivity.this, LocationListActivity.class);
 		startActivity(intent);
 		finish();

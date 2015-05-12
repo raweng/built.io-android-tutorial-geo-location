@@ -31,7 +31,8 @@ public class SignUpActivity extends BuiltUISignUpController {
 	protected void onCreate(Bundle arg0) {
 		super.onCreate(arg0);
 		/// BuiltUISignUpController can be used by extending user class.
-	}
+        setApplicationKey("blt9f2f3c1d77c907e0");
+    }
 
 	@Override
 	public void signUpSuccess(BuiltUser user) {
